@@ -2,7 +2,12 @@ var audio=document.getElementById("audio")
 var title=document.getElementById("title")
 var progress=document.getElementById("progress")
 
-var playlist=[
+var index=0
+var repeatCount=0
+
+// RUQYAH STREAMING
+
+var ruqyahPlaylist=[
 
 {title:"Surah Fatiha",file:"audio/fatiha.mp3"},
 {title:"Ayatul Kursi",file:"audio/ayatul_kursi.mp3"},
@@ -12,8 +17,26 @@ var playlist=[
 
 ]
 
-var index=0
-var repeatCount=0
+// EVIL EYE
+
+var evilPlaylist=[
+
+{title:"Evil Eye Ruqyah",file:"audio/evil_eye.mp3"},
+{title:"Nazar Protection",file:"audio/nazar.mp3"}
+
+]
+
+// FULL QURAN (Example few surah – आप 114 add कर सकते हैं)
+
+var quranPlaylist=[
+
+{title:"Surah Baqarah",file:"audio/baqarah.mp3"},
+{title:"Surah Yaseen",file:"audio/yaseen.mp3"},
+{title:"Surah Rahman",file:"audio/rahman.mp3"}
+
+]
+
+var playlist=ruqyahPlaylist
 
 function loadTrack(i){
 
@@ -68,6 +91,8 @@ playAudio()
 
 }
 
+// AUTO 3 TIMES
+
 audio.addEventListener("ended",function(){
 
 repeatCount++
@@ -87,6 +112,8 @@ nextTrack()
 
 })
 
+// PROGRESS BAR
+
 audio.addEventListener("timeupdate",function(){
 
 if(audio.duration){
@@ -99,16 +126,59 @@ progress.value=(audio.currentTime/audio.duration)*100
 
 progress.addEventListener("input",function(){
 
-if(audio.duration){
-
 audio.currentTime=(progress.value/100)*audio.duration
-
-}
 
 })
 
-if("serviceWorker" in navigator){
+// SECTION SWITCH
 
-navigator.serviceWorker.register("service-worker.js")
+function showSection(type){
+
+if(type=="ruqyah"){
+
+playlist=ruqyahPlaylist
+
+}
+
+if(type=="evil"){
+
+playlist=evilPlaylist
+
+}
+
+if(type=="quran"){
+
+playlist=quranPlaylist
+
+}
+
+index=0
+loadTrack(index)
+
+}
+
+// TASBEEH
+
+var count=0
+
+function increase(){
+
+count++
+document.getElementById("count").innerText=count
+
+}
+
+function reset(){
+
+count=0
+document.getElementById("count").innerText=count
+
+}
+
+// DARK MODE
+
+function toggleDark(){
+
+document.body.classList.toggle("dark")
 
 }
