@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ruqyah Healing</title>
+<title>Ruqyah Healing App</title>
 
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
 
 </head>
 
@@ -17,10 +16,22 @@
 
 <div class="container">
 
-<h1>🕌 Ruqyah Healing App</h1>
-<p>Islamic Protection & Spiritual Healing</p>
+<h1>🕌 Ruqyah Healing</h1>
 
-<div class="player">
+<button onclick="toggleDark()">🌙 Dark Mode</button>
+
+<div class="tabs">
+
+<button onclick="showSection('ruqyah')">Ruqyah</button>
+<button onclick="showSection('quran')">Quran</button>
+<button onclick="showSection('evil')">Evil Eye</button>
+<button onclick="showSection('tasbeeh')">Tasbeeh</button>
+
+</div>
+
+<!-- PLAYER -->
+
+<div id="player">
 
 <h2 id="title">Loading...</h2>
 
@@ -35,7 +46,20 @@
 
 </div>
 
-<input type="range" id="progress" value="0">
+<input type="range" id="progress">
+
+</div>
+
+<!-- TASBEEH -->
+
+<div id="tasbeeh" class="section">
+
+<h2>📿 Digital Tasbeeh</h2>
+
+<h1 id="count">0</h1>
+
+<button onclick="increase()">+1</button>
+<button onclick="reset()">Reset</button>
 
 </div>
 
