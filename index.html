@@ -1,57 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ruqyah Healing App</title>
+<title>Ruqyah Healing</title>
 
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
 
 </head>
 
 <body>
 
-<h1>🕌 Ruqyah Healing</h1>
+<div class="container">
 
-<div class="tabs">
+<h1>🕌 Ruqyah Healing App</h1>
+<p>Islamic Protection & Spiritual Healing</p>
 
-<button onclick="showPlayer()">Ruqyah</button>
-<button onclick="showTasbeeh()">Tasbeeh</button>
+<div class="player">
 
-</div>
-
-<div id="player">
-
-<h2 id="title"></h2>
+<h2 id="title">Loading...</h2>
 
 <audio id="audio"></audio>
 
-<button onclick="prev()">⏮</button>
-<button onclick="play()">▶</button>
-<button onclick="pause()">⏸</button>
-<button onclick="next()">⏭</button>
+<div class="controls">
 
-<input type="range" id="progress">
+<button onclick="prevTrack()">⏮</button>
+<button onclick="playAudio()">▶</button>
+<button onclick="pauseAudio()">⏸</button>
+<button onclick="nextTrack()">⏭</button>
 
 </div>
 
-<div id="tasbeeh" style="display:none">
+<input type="range" id="progress" value="0">
 
-<h2>Tasbeeh Counter</h2>
-
-<h1 id="count">0</h1>
-
-<button onclick="increase()">+1</button>
-<button onclick="reset()">Reset</button>
+</div>
 
 </div>
 
 <script src="script.js"></script>
-<script src="tasbeeh.js"></script>
 
 </body>
-
 </html>
