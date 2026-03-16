@@ -1,184 +1,226 @@
-var audio=document.getElementById("audio")
-var title=document.getElementById("title")
-var progress=document.getElementById("progress")
+// ==================== AUDIO PLAYER ====================
+const audio = document.getElementById('audio');
+const trackTitle = document.getElementById('trackTitle');
+const progress = document.getElementById('progress');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const currentTimeSpan = document.getElementById('currentTime');
+const durationSpan = document.getElementById('duration');
 
-var index=0
-var repeatCount=0
+let currentIndex = 0;
+let repeatCount = 0; // counts how many times current track has played (max 3)
+let currentPlaylist = [];
 
-// RUQYAH STREAMING
+// ----- Playlists (using existing audio files) -----
+const ruqyahPlaylist = [
+  { title: 'Surah Al-Fatiha', file: 'audio/fatiha.mp3' },
+  { title: 'Ayatul Kursi', file: 'audio/ayatul_kursi.mp3' },
+  { title: 'Surah Al-Ikhlas', file: 'audio/ikhlas.mp3' },
+  { title: 'Surah Al-Falaq', file: 'audio/falaq.mp3' },
+  { title: 'Surah An-Naas', file: 'audio/naas.mp3' }
+];
 
-var ruqyahPlaylist=[
+const evilPlaylist = [
+  { title: 'Evil Eye Protection (Ayatul Kursi)', file: 'audio/ayatul_kursi.mp3' },
+  { title: 'Nazar ki Dua (Surah Falaq)', file: 'audio/falaq.mp3' },
+  { title: 'Surah Naas for Protection', file: 'audio/naas.mp3' }
+];
 
-{title:"Surah Fatiha",file:"audio/fatiha.mp3"},
-{title:"Ayatul Kursi",file:"audio/ayatul_kursi.mp3"},
-{title:"Surah Ikhlas",file:"audio/ikhlas.mp3"},
-{title:"Surah Falaq",file:"audio/falaq.mp3"},
-{title:"Surah Naas",file:"audio/naas.mp3"}
+const quranPlaylist = [
+  { title: 'Surah Baqarah (Last Ayat)', file: 'audio/baqarah_last_ayat.mp3' },
+  { title: 'Surah Fatiha', file: 'audio/fatiha.mp3' },
+  { title: 'Ayatul Kursi', file: 'audio/ayatul_kursi.mp3' }
+];
 
-]
+// Default playlist
+currentPlaylist = ruqyahPlaylist;
 
-// EVIL EYE
+// Load first track
+loadTrack(0);
 
-var evilPlaylist=[
-
-{title:"Evil Eye Ruqyah",file:"audio/evil_eye.mp3"},
-{title:"Nazar Protection",file:"audio/nazar.mp3"}
-
-]
-
-// FULL QURAN (Example few surah – आप 114 add कर सकते हैं)
-
-var quranPlaylist=[
-
-{title:"Surah Baqarah",file:"audio/baqarah.mp3"},
-{title:"Surah Yaseen",file:"audio/yaseen.mp3"},
-{title:"Surah Rahman",file:"audio/rahman.mp3"}
-
-]
-
-var playlist=ruqyahPlaylist
-
-function loadTrack(i){
-
-audio.src=playlist[i].file
-title.innerText=playlist[i].title
-
+function loadTrack(index) {
+  if (!currentPlaylist.length) return;
+  currentIndex = index;
+  const track = currentPlaylist[currentIndex];
+  audio.src = track.file;
+  trackTitle.textContent = track.title;
+  audio.load(); // reset audio element
+  // Reset repeat counter for new track
+  repeatCount = 0;
+  // Update play/pause icon
+  updatePlayPauseIcon();
 }
 
-loadTrack(index)
-
-function playAudio(){
-
-audio.play()
-
+function playAudio() {
+  audio.play().catch(e => {
+    alert('Could not play audio. File may be missing: ' + audio.src);
+  });
 }
 
-function pauseAudio(){
-
-audio.pause()
-
+function pauseAudio() {
+  audio.pause();
 }
 
-function nextTrack(){
-
-index++
-
-if(index>=playlist.length){
-
-index=0
-
+function playPause() {
+  if (audio.paused) {
+    playAudio();
+  } else {
+    pauseAudio();
+  }
 }
 
-repeatCount=0
-loadTrack(index)
-playAudio()
-
+function nextTrack() {
+  if (!currentPlaylist.length) return;
+  currentIndex = (currentIndex + 1) % currentPlaylist.length;
+  loadTrack(currentIndex);
+  playAudio();
 }
 
-function prevTrack(){
-
-index--
-
-if(index<0){
-
-index=playlist.length-1
-
+function prevTrack() {
+  if (!currentPlaylist.length) return;
+  currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+  loadTrack(currentIndex);
+  playAudio();
 }
 
-repeatCount=0
-loadTrack(index)
-playAudio()
+// Auto repeat 3 times then next
+audio.addEventListener('ended', () => {
+  repeatCount++;
+  if (repeatCount < 3) {
+    audio.currentTime = 0;
+    playAudio();
+  } else {
+    nextTrack();
+  }
+});
 
+// Update progress bar and time
+audio.addEventListener('timeupdate', updateProgress);
+audio.addEventListener('loadedmetadata', () => {
+  durationSpan.textContent = formatTime(audio.duration);
+  progress.max = audio.duration;
+});
+
+function updateProgress() {
+  if (audio.duration) {
+    progress.value = audio.currentTime;
+    currentTimeSpan.textContent = formatTime(audio.currentTime);
+  }
 }
 
-// AUTO 3 TIMES
+progress.addEventListener('input', () => {
+  audio.currentTime = progress.value;
+});
 
-audio.addEventListener("ended",function(){
-
-repeatCount++
-
-if(repeatCount<3){
-
-audio.currentTime=0
-audio.play()
-
+function formatTime(seconds) {
+  if (isNaN(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
-else{
-
-nextTrack()
-
+function updatePlayPauseIcon() {
+  const icon = playPauseBtn.querySelector('i');
+  if (audio.paused) {
+    icon.className = 'fas fa-play';
+  } else {
+    icon.className = 'fas fa-pause';
+  }
 }
 
-})
+audio.addEventListener('play', updatePlayPauseIcon);
+audio.addEventListener('pause', updatePlayPauseIcon);
 
-// PROGRESS BAR
+// ==================== TAB SWITCHING ====================
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tasbeehSection = document.getElementById('tasbeehSection');
 
-audio.addEventListener("timeupdate",function(){
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Remove active class from all tabs
+    tabButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-if(audio.duration){
+    const section = btn.dataset.section;
 
-progress.value=(audio.currentTime/audio.duration)*100
+    // Show/hide Tasbeeh section
+    if (section === 'tasbeeh') {
+      tasbeehSection.style.display = 'block';
+    } else {
+      tasbeehSection.style.display = 'none';
+      // Switch playlist based on section
+      switch (section) {
+        case 'ruqyah':
+          currentPlaylist = ruqyahPlaylist;
+          break;
+        case 'evil':
+          currentPlaylist = evilPlaylist;
+          break;
+        case 'quran':
+          currentPlaylist = quranPlaylist;
+          break;
+      }
+      // Reset to first track of new playlist and play
+      loadTrack(0);
+      playAudio();
+    }
+  });
+});
 
+// ==================== TASBEEH LOGIC ====================
+let counts = {
+  subhan: 0,
+  hamd: 0,
+  akbar: 0
+};
+
+function increase(dhikr) {
+  counts[dhikr]++;
+  updateDhikrDisplay(dhikr);
 }
 
-})
-
-progress.addEventListener("input",function(){
-
-audio.currentTime=(progress.value/100)*audio.duration
-
-})
-
-// SECTION SWITCH
-
-function showSection(type){
-
-if(type=="ruqyah"){
-
-playlist=ruqyahPlaylist
-
+function reset(dhikr) {
+  counts[dhikr] = 0;
+  updateDhikrDisplay(dhikr);
 }
 
-if(type=="evil"){
-
-playlist=evilPlaylist
-
+function resetAll() {
+  counts = { subhan: 0, hamd: 0, akbar: 0 };
+  updateAllDisplays();
 }
 
-if(type=="quran"){
+function updateDhikrDisplay(dhikr) {
+  const element = document.getElementById(`count${dhikr.charAt(0).toUpperCase() + dhikr.slice(1)}`);
+  if (element) element.textContent = counts[dhikr];
 
-playlist=quranPlaylist
+  // Update progress bar (goal 33)
+  const progressFill = document.getElementById(`progress${dhikr.charAt(0).toUpperCase() + dhikr.slice(1)}`);
+  if (progressFill) {
+    const percent = Math.min((counts[dhikr] / 33) * 100, 100);
+    progressFill.style.width = percent + '%';
+  }
 
+  // Update total
+  const total = counts.subhan + counts.hamd + counts.akbar;
+  document.getElementById('totalCount').textContent = total;
 }
 
-index=0
-loadTrack(index)
-
+function updateAllDisplays() {
+  updateDhikrDisplay('subhan');
+  updateDhikrDisplay('hamd');
+  updateDhikrDisplay('akbar');
 }
 
-// TASBEEH
+// ==================== DARK MODE ====================
+const darkToggle = document.getElementById('darkModeToggle');
+darkToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  const icon = darkToggle.querySelector('i');
+  if (document.body.classList.contains('dark')) {
+    icon.className = 'fas fa-sun';
+  } else {
+    icon.className = 'fas fa-moon';
+  }
+});
 
-var count=0
-
-function increase(){
-
-count++
-document.getElementById("count").innerText=count
-
-}
-
-function reset(){
-
-count=0
-document.getElementById("count").innerText=count
-
-}
-
-// DARK MODE
-
-function toggleDark(){
-
-document.body.classList.toggle("dark")
-
-}
+// ==================== INITIAL HIDE TASBEEH ====================
+tasbeehSection.style.display = 'none';
