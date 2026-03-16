@@ -28,9 +28,10 @@ const evilPlaylist = [
   { title: 'Surah Naas for Protection', file: 'audio/naas.mp3' }
 ];
 
-// ----- QURAN PLAYLIST (ONLINE STREAM) -----
-// Using Alafasy recitation from Islamic Network CDN
-// Pattern: https://cdn.islamic.network/quran/audio/128/ar.alafasy/001.mp3 (for surah 1)
+// ----- QURAN PLAYLIST (ONLINE STREAM) - IslamHouse HTTPS (reliable) -----
+// Using Alafasy recitation at 128kbps
+// Base URL: https://audio.islamhouse.com/quran/ar/Alafasy/001.mp3 (for surah 1)
+
 const surahNames = [
   "Al-Fatiha", "Al-Baqarah", "Aal-E-Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus",
   "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha",
@@ -46,12 +47,12 @@ const surahNames = [
   "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"
 ];
 
-// Generate playlist with online URLs
+// Generate playlist with IslamHouse URLs (HTTPS)
 const quranPlaylist = surahNames.map((name, index) => {
   const surahNumber = (index + 1).toString().padStart(3, '0'); // 001, 002, ... 114
   return {
     title: `${index + 1}. Surah ${name}`,
-    file: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${surahNumber}.mp3`
+    file: `https://audio.islamhouse.com/quran/ar/Alafasy/${surahNumber}.mp3`
   };
 });
 
@@ -102,7 +103,8 @@ function loadTrack(index) {
 
 function playAudio() {
   audio.play().catch(e => {
-    alert('Could not play audio. File may be missing or URL invalid: ' + audio.src);
+    console.warn('Playback failed:', e);
+    // Optionally show a user-friendly message
   });
 }
 
@@ -141,6 +143,12 @@ audio.addEventListener('ended', () => {
   } else {
     nextTrack();
   }
+});
+
+// Skip to next track if audio fails to load (e.g., missing file)
+audio.addEventListener('error', (e) => {
+  console.warn('Audio failed to load, skipping to next track:', audio.src);
+  nextTrack();
 });
 
 // Update progress bar and time
