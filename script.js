@@ -21,7 +21,8 @@ const ruqyahPlaylist = [
   { title: 'Ayatul Kursi', file: 'audio/ayatul_kursi.mp3' },
   { title: 'Surah Al-Ikhlas', file: 'audio/ikhlas.mp3' },
   { title: 'Surah Al-Falaq', file: 'audio/falaq.mp3' },
-  { title: 'Surah An-Naas', file: 'audio/naas.mp3' }
+  { title: 'Surah An-Naas', file: 'audio/naas.mp3' },
+  { title: 'Surah baqarah_last_ayat', file: 'audio/baqarah_last_ayat.mp3' }
 ];
 
 const evilPlaylist = [
